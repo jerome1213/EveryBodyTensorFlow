@@ -36,8 +36,8 @@ import tensorflow.contrib.slim as slim
 
 sys.path.insert(0, getcwd() + '/tf_my_modules/cnn')
 
-from everybodytensorflow.tf_my_modules.cnn.mnist_data_loader import DataFilename
-from everybodytensorflow.tf_my_modules.cnn.mnist_data_loader import MnistLoader
+from tf_my_modules.cnn.mnist_data_loader import DataFilename
+from tf_my_modules.cnn.mnist_data_loader import MnistLoader
 
 # configure training parameters =====================================
 TRAININGSET_SIZE = 5000
@@ -128,13 +128,13 @@ def get_model(model_in, dropout_keeprate_node, train_config, scope):
     net = model_in
     
     with tf.variable_scope(name_or_scope=scope, values=[model_in]):
-        with slim.arg_scope([slim.conv2d], padding='SAME', stride=[1, 1], kernel_size=[5, 5], weights_initializer=train_config.weight_initializer):
-            with slim.arg_scope([slim.max_pool2d], padding='VALID', stride=[2, 2], kernel_size=[5, 5]):
-                c1_out = slim.conv2d(inputs=net, num_outputs=6, padding='SAME', stride=[1, 1], kernel_size=[5, 5], weights_initializer=train_config.weight_initializer, scope='c1_conv')
-                s2_out = slim.max_pool2d(inputs=c1_out, kernel_size=[2, 2], scope='s2_pool')
-                c3_out = slim.conv2d(inputs=s2_out, num_outputs=16, padding='SAME', stride=[1, 1], kernel_size=[5, 5], weights_initializer=train_config.weight_initializer, scope='c3_conv')
-                s4_out = slim.max_pool2d(inputs=c3_out, kernel_size=[2, 2], scope='s4_pool')
-                c5_out = slim.conv2d(inputs=s4_out, num_outputs=120, padding='SAME', stride=[1, 1], kernel_size=[5, 5], weights_initializer=train_config.weight_initializer, scope='c5_conv')
+        with slim.arg_scope([slim.conv2d], padding='VALID', stride=[1, 1], kernel_size=[5, 5], weights_initializer=train_config.weight_initializer):
+            with slim.arg_scope([slim.max_pool2d], padding='VALID', stride=[2, 2], kernel_size=[2, 2]):
+                c1_out = slim.conv2d(inputs=net, num_outputs=6, padding='SAME', scope='c1_conv')
+                s2_out = slim.max_pool2d(inputs=c1_out, scope='s2_pool')
+                c3_out = slim.conv2d(inputs=s2_out, num_outputs=16, scope='c3_conv')
+                s4_out = slim.max_pool2d(inputs=c3_out, scope='s4_pool')
+                c5_out = slim.conv2d(inputs=s4_out, num_outputs=120, scope='c5_conv')
                 
                 f6_logit = slim.fully_connected(inputs=c5_out, num_outputs=84, activation_fn=None, weights_initializer=train_config.weight_initializer)
                 f6_logit = slim.dropout(inputs=f6_logit, keep_prob=dropout_keeprate_node, seed=train_config.random_seed)
